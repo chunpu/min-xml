@@ -51,10 +51,34 @@
 	function main() {
 		var xml = XML.parse(xmlStr)
 		console.log(true === XML.isElement(xml))
+
 		var twob = XML.find([xml], 'twob')
 		console.log(true === XML.isElement(twob[0]))
 		console.log(2 === XML.children(twob).length)
+		console.log(xml === XML.parent(twob)[0])
+
 		console.log('twob' === XML.name(twob))
+
+		console.log('a' === XML.attr(twob, 'a'))
+		console.log('b' === XML.attr(twob, 'b'))
+
+		console.log(2 === XML.attrs(twob).length)
+		console.log(2 === XML.attrs(twob).length)
+
+		console.log(0 === XML.get(twob, 'c').length)
+		console.log(1 === XML.get(twob, 'b').length)
+
+		console.log(2 === XML.find(twob, 'c').length)
+		console.log(1 === XML.find(twob, 'b2').length)
+
+		console.log('c-text' === XML.text(XML.get(XML.get(twob, 'b'), 'c')))
+
+		var b2c = XML.get(XML.get(twob, 'b2'), 'c')
+		console.log('abccdata<>text' === XML.text(b2c))
+
+		var xmlList = [XML.find(twob, 'b')[0], XML.find(twob, 'b2')[0]]
+		console.log(2 === XML.children(xmlList).length)
+		console.log(1 === XML.parent(xmlList).length)
 	}
 
 	main()
@@ -99,7 +123,7 @@
 
 	one.get = function(node, name) { // search direct son node
 		var children = one.children(node)
-		_.filter(children, function(node) {
+		return _.filter(children, function(node) {
 			return name == one.name(node)
 		})
 	}
@@ -140,12 +164,6 @@
 		return nodeList
 	}
 
-	exports.parent = function(nodeList) {
-		return _.map(nodeList, function(node) {
-			return one.parent(node)
-		})
-	}
-
 	// use first node
 	_.each('name attr attrs'.split(' '), function(key) {
 		exports[key] = function() {
@@ -160,7 +178,7 @@
 	})
 
 	// merge node
-	_.each('get children find'.split(' '), function(key) {
+	_.each('get children find parent'.split(' '), function(key) {
 		exports[key] = function() {
 			var args = arguments
 			var nodeList = _.first(args)

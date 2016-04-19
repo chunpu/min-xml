@@ -32,7 +32,7 @@ one.text = function(node) { // same as value
 
 one.get = function(node, name) { // search direct son node
 	var children = one.children(node)
-	_.filter(children, function(node) {
+	return _.filter(children, function(node) {
 		return name == one.name(node)
 	})
 }
@@ -73,12 +73,6 @@ exports.init = function(nodeList) {
 	return nodeList
 }
 
-exports.parent = function(nodeList) {
-	return _.map(nodeList, function(node) {
-		return one.parent(node)
-	})
-}
-
 // use first node
 _.each('name attr attrs'.split(' '), function(key) {
 	exports[key] = function() {
@@ -93,7 +87,7 @@ _.each('name attr attrs'.split(' '), function(key) {
 })
 
 // merge node
-_.each('get children find'.split(' '), function(key) {
+_.each('get children find parent'.split(' '), function(key) {
 	exports[key] = function() {
 		var args = arguments
 		var nodeList = _.first(args)
