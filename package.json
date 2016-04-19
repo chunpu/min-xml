@@ -4,8 +4,13 @@
   "description": "",
   "main": "min-xml.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"debug": "webpack browser/demo.js --output-file browser/bundle.js && http-server browser/"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "min-parse": "^1.1.2",
+    "min-util": "^1.10.1"
+  }
 }

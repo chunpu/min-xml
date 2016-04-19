@@ -1,4 +1,5 @@
 var _ = require('min-util')
+var parser = require('min-parse')
 // https://www.w3.org/TR/REC-xml/
 
 //document element(node)
@@ -63,13 +64,13 @@ exports.isElement = function(node) {
 	return false
 }
 
-exports.parse = function(xmlStr) {
-}
+exports.parse = parser.xml
 
-exports.children = function(nodeList) {
-	return merge(_.map(nodeList, function(node) {
-		return one.children(node)
-	}))
+exports.init = function(nodeList) {
+	if (exports.isElement(nodeList)) {
+		return [nodeList]
+	}
+	return nodeList
 }
 
 exports.parent = function(nodeList) {
@@ -82,11 +83,25 @@ exports.parent = function(nodeList) {
 _.each('name attr attrs'.split(' '), function(key) {
 	exports[key] = function() {
 		var args = arguments
-		var nodeList = args[0]
-		var first = _.first(nodeList)
-		if (first) {
-			return one[key].apply(one[key], args)
+		var nodeList = _.first(args)
+		var node = _.first(nodeList)
+		if (node) {
+			args[0] = node
+			return one[key].apply(one, args)
 		}
+	}
+})
+
+// merge node
+_.each('get children find'.split(' '), function(key) {
+	exports[key] = function() {
+		var args = arguments
+		var nodeList = _.first(args)
+		return merge(_.map(nodeList, function(node) {
+			var arr = _.slice(args)
+			arr[0] = node
+			return one[key].apply(one, arr)
+		}))	
 	}
 })
 
@@ -94,17 +109,5 @@ exports.text = function(nodeList) {
 	return _.map(nodeList, function(node) {
 		return one.text(node)
 	}).join('')
-}
-
-exports.get = function(nodeList, name) {
-	return merge(_.map(nodeList, function(node) {
-		return one.get(node, name)
-	}))
-}
-
-exports.find = function(nodeList, name) {
-	return merge(_.map(nodeList, function(node) {
-		return one.find(node, name)
-	}))
 }
 
